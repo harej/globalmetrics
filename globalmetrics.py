@@ -93,9 +93,9 @@ class GlobalMetrics:
             
                 prev_lengths = {x[0]: x[1] for x in q2}
             
-            for revision, parent in parents.items():
-                if parent == 0:
-                    prev_lengths[revision] = 0
+                for revision, parent in parents.items():
+                    if parent == 0:
+                        prev_lengths[revision] = 0
 
             # Combining the two queries above to calculate revision sizes
             # 0 = user; 1 = pagename; 2 = absolute value bytes contributed
