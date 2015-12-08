@@ -80,18 +80,7 @@ class GlobalMetrics:
                   "and rev_timestamp <= {1} "
                   "and rev_user_text in {2};").format(start, end, tuple(self.cohort))
             q1 = self.sql.query(project, q1, None)
-            
-            # Number of edits
-            
-            self.number_of_edits[project] = {}
-            for row in q1:
-                if row[5] == 0:
-                    user = row[0].decode('utf-8')
-                    if user in self.number_of_edits[project]:
-                        self.number_of_edits[project][user] += 1
-                    else:
-                        self.number_of_edits[project][user] = 1
-            
+                        
             # Absolute bytes
             
             prev_lengths = {}
@@ -122,13 +111,15 @@ class GlobalMetrics:
                 else:
                     self.absolute_bytes[project][row[0]] = row[2]
                     
-                # Articles edited or improved
+                # Articles edited or improved (and ns 0 edit count)
                 
                 if row[3] == 0:  # Metric only applies to articles
                     if row[0] in self.edited_articles_list[project]:
+                        self.number_of_edits[project][user] += 1
                         if row[1] not in self.edited_articles_list[project][row[0]]:
                             self.edited_articles_list[project][row[0]].append(row[1])
                     else:
+                        self.number_of_edits[project][user] = 1
                         self.edited_articles_list[project][row[0]] = [row[1]]
 
             # For users not making any edits in the time period
@@ -137,6 +128,8 @@ class GlobalMetrics:
                     self.absolute_bytes[project][user] = 0
                 if user not in self.edited_articles_list[project]:
                     self.edited_articles_list[project][user] = []
+                if user not in self.number_of_edits[project]:
+                    self.number_of_edits[project][user] = 0
 
         # Media uploaded to Commons
         
