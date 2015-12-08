@@ -32,7 +32,7 @@ class GlobalMetrics:
         self.edited_articles_list = {}
 
         start_minus_30_days = self.starttime.replace(days=-30)
-        start_minus_30_days_string = start_minus_30_days.format('YYYYMMDDHHmmss')
+        start_minus_30_days = start_minus_30_days.format('YYYYMMDDHHmmss')
         start = self.starttime.format('YYYYMMDDHHmmss')
         end = self.endtime.format('YYYYMMDDHHmmss')
 
@@ -42,7 +42,7 @@ class GlobalMetrics:
 
             q = ("select rev_user_text, count(*) from revision_userindex "
                  "where rev_timestamp >= {0} and rev_user_text in {1} "
-                 "group by rev_user_text;").format(start_minus_30_days_string, tuple(self.cohort))
+                 "group by rev_user_text;").format(start_minus_30_days, tuple(self.cohort))
             print(q)
             q = self.sql.query(project, q, None)
             self.active_editors[project] = {}
@@ -63,7 +63,7 @@ class GlobalMetrics:
             for row in q:
                 user = row[0].decode('utf-8')
                 reg = row[1].decode('utf-8')
-                if arrow.get(reg, 'YYYYMMDDHHmmss') <= start_minus_30_days:
+                if reg <= start_minus_30_days:
                     self.newly_registered[project][user] = True
                 else:
                     self.newly_registered[project][user] = False
