@@ -92,13 +92,13 @@ class GlobalMetrics:
             
                 for revision, parent in parents.items():
                     if parent == 0:
-                        prev_lengths[revision] = 0
+                        prev_lengths[parent] = 0
 
             # Combining the two queries above to calculate revision sizes
             # 0 = user; 1 = pagename; 2 = absolute value bytes contributed
             q = [[x[0].decode("utf-8"), \
                   x[1].decode("utf-8"), \
-                  abs(x[2] - prev_lengths[x[2]])] \
+                  abs(x[2] - prev_lengths[x[3]])] \
                  for x in q1]
             
             for row in q:
