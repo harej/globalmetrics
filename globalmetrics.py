@@ -79,7 +79,6 @@ class GlobalMetrics:
                   "where rev_timestamp >= {0} "
                   "and rev_timestamp <= {1} "
                   "and rev_user_text in {2};").format(start, end, tuple(self.cohort))
-            print(q1)
             q1 = self.sql.query(project, q1, None)
             
             prev_lengths = {}
@@ -88,7 +87,6 @@ class GlobalMetrics:
             
                 q2 = ("select rev_id, rev_len from revision_userindex "
                       "where rev_id in {0}").format(tuple(parents.values()))
-                print(q2)
                 q2 = self.sql.query(project, q2, None)
             
                 prev_lengths = {x[0]: x[1] for x in q2}
