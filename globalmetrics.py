@@ -27,10 +27,10 @@ class GlobalMetrics:
         
         self.active_editors = {proj: {} for proj in projects}
         self.newly_registered = {proj: {} for proj in projects}
-        self.uploaded_media = {'commonswiki': {}}
-        self.absolute_bytes = {proj: {} for proj in projects}
-        self.edited_articles_list = {proj: {} for proj in projects}
-        self.number_of_edits = {proj: {} for proj in projects}
+        self.uploaded_media = {'commonswiki': {user: [] for user in cohort}}
+        self.absolute_bytes = {proj: {user: 0 for user in cohort} for proj in projects}
+        self.edited_articles_list = {proj: {user: [] for user in cohort} for proj in projects}
+        self.number_of_edits = {proj: {user: 0 for user in cohort} for proj in projects}
 
         start_minus_30_days = self.starttime.replace(days=-30)
         start_minus_30_days = start_minus_30_days.format('YYYYMMDDHHmmss')
@@ -100,30 +100,14 @@ class GlobalMetrics:
                   for x in q1]
             
             for row in q:
-                if row[0] in self.absolute_bytes[project]:
-                    self.absolute_bytes[project][row[0]] += row[2]
-                else:
-                    self.absolute_bytes[project][row[0]] = row[2]
+                self.absolute_bytes[project][row[0]] += row[2]
                     
                 # Articles edited or improved (and ns 0 edit count)
                 
                 if row[3] == 0:  # Metric only applies to articles
-                    if row[0] in self.edited_articles_list[project]:
-                        self.number_of_edits[project][row[0]] += 1
-                        if row[1] not in self.edited_articles_list[project][row[0]]:
-                            self.edited_articles_list[project][row[0]].append(row[1])
-                    else:
-                        self.number_of_edits[project][user] = 1
-                        self.edited_articles_list[project][row[0]] = [row[1]]
-
-            # For users not making any edits in the time period
-            for user in self.cohort:
-                if user not in self.absolute_bytes[project]:
-                    self.absolute_bytes[project][user] = 0
-                if user not in self.edited_articles_list[project]:
-                    self.edited_articles_list[project][user] = []
-                if user not in self.number_of_edits[project]:
-                    self.number_of_edits[project][user] = 0
+                    self.number_of_edits[project][row[0]] += 1
+                    if row[1] not in self.edited_articles_list[project][row[0]]:
+                        self.edited_articles_list[project][row[0]].append(row[1])
 
         # Media uploaded to Commons
         
@@ -136,8 +120,3 @@ class GlobalMetrics:
                 self.uploaded_media['commonswiki'][user].append(file)
             else:
                 self.uploaded_media['commonswiki'][user] = [file]
-        
-        # For users not making any uploads in the time period
-        for user in self.cohort:
-            if user not in self.uploaded_media['commonswiki']:
-                self.uploaded_media['commonswiki'][user] = []
