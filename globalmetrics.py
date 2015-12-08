@@ -73,13 +73,17 @@ class GlobalMetrics:
             self.absolute_bytes[project] = {}
             self.edited_articles_list[project] = {}
 
-            q1 = self.sql.query(project, "select rev_user_text, page_title, rev_len, rev_parent_id from revision_userindex join page on rev_page = page_id where rev_timestamp >= {0} and rev_timestamp <= {1} and rev_user_text in {2};".format(start, end, tuple(self.cohort)), None)
+            q1 = self.sql.query(project, "select rev_user_text, page_title, rev_len, rev_parent_id, rev_id from revision_userindex join page on rev_page = page_id where rev_timestamp >= {0} and rev_timestamp <= {1} and rev_user_text in {2};".format(start, end, tuple(self.cohort)), None)
             
-            parents = tuple([x[3] for x in q1])
+            parents = {x[4]: x[3] for x in q1}
             
-            q2 = self.sql.query(project, "select rev_id, rev_len from revision_userindex where rev_id in {0}".format(parents), None)
+            q2 = self.sql.query(project, "select rev_id, rev_len from revision_userindex where rev_id in {0}".format(list(parents.values())), None)
             
             prev_lengths = {x[0]: x[1] for x in q2}
+            
+            for revision, parent in parents.items():
+                if parent == 0:
+                    prev_lengths[revision] = 0
 
             # Combining the two queries above to calculate revision sizes
             # 0 = user; 1 = pagename; 2 = absolute value bytes contributed
