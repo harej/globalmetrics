@@ -73,7 +73,7 @@ class GlobalMetrics:
             self.edited_articles_list[project] = {}
 
             q1 = ("select rev_user_text, page_title, rev_len, rev_parent_id, "
-                  "rev_id from revision_userindex "
+                  "rev_id, page_namespace from revision_userindex "
                   "join page on rev_page = page_id "
                   "where rev_timestamp >= {0} "
                   "and rev_timestamp <= {1} "
@@ -95,11 +95,12 @@ class GlobalMetrics:
                         prev_lengths[parent] = 0
 
             # Combining the two queries above to calculate revision sizes
-            # 0 = user; 1 = pagename; 2 = absolute value bytes contributed
+            # 0 = user; 1 = pagename; 2 = absolute value bytes contributed, 3 = namespace
             q = [[x[0].decode("utf-8"), \
                   x[1].decode("utf-8"), \
-                  abs(x[2] - prev_lengths[x[3]])] \
-                 for x in q1]
+                  abs(x[2] - prev_lengths[x[3]]), \
+                  x[5]] \
+                  for x in q1]
             
             for row in q:
                 if row[0] in self.absolute_bytes[project]:
@@ -109,11 +110,12 @@ class GlobalMetrics:
                     
                 # Articles edited or improved
                 
-                if row[0] in self.edited_articles_list[project]:
-                    if row[1] not in self.edited_articles_list[project][row[0]]:
-                        self.edited_articles_list[project][row[0]].append(row[1])
-                else:
-                    self.edited_articles_list[project][row[0]] = [row[1]]
+                if row[3] == 0:  # Metric only applies to articles
+                    if row[0] in self.edited_articles_list[project]:
+                        if row[1] not in self.edited_articles_list[project][row[0]]:
+                            self.edited_articles_list[project][row[0]].append(row[1])
+                    else:
+                        self.edited_articles_list[project][row[0]] = [row[1]]
 
             # For users not making any edits in the time period
             for user in self.cohort:
