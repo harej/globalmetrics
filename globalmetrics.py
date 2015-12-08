@@ -42,10 +42,9 @@ class GlobalMetrics:
 
             q = ("select rev_user_text, count(*) from revision_userindex "
                  "where rev_timestamp >= {0} and rev_user_text in {1} "
-                 "group by rev_user_text;")
-            q = self.sql.query(project, \
-                               q.format(start_minus_30_days, tuple(self.cohort)), \
-                               None)
+                 "group by rev_user_text;").format(start_minus_30_days, tuple(self.cohort))
+            print(q)
+            q = self.sql.query(project, q, None)
             self.active_editors[project] = {}
 
             for row in q:
