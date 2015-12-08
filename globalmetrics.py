@@ -85,11 +85,12 @@ class GlobalMetrics:
             
             self.number_of_edits[project] = {}
             for row in q1:
-                user = row[0].decode('utf-8')
-                if user in self.number_of_edits[project]:
-                    self.number_of_edits[project][user] += 1
-                else:
-                    self.number_of_edits[project][user] = 1
+                if row[5] == 0:
+                    user = row[0].decode('utf-8')
+                    if user in self.number_of_edits[project]:
+                        self.number_of_edits[project][user] += 1
+                    else:
+                        self.number_of_edits[project][user] = 1
             
             # Absolute bytes
             
