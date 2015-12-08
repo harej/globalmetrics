@@ -32,6 +32,7 @@ class GlobalMetrics:
         self.edited_articles_list = {}
 
         start_minus_30_days = self.starttime.replace(days=-30)
+        start_minus_30_days = start_minus_30_days.format('YYYYMMDDHHmmss')
         start = self.starttime.format('YYYYMMDDHHmmss')
         end = self.endtime.format('YYYYMMDDHHmmss')
 
