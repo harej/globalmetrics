@@ -109,7 +109,7 @@ class GlobalMetrics:
                 
                 if row[3] == 0:  # Metric only applies to articles
                     if row[0] in self.edited_articles_list[project]:
-                        self.number_of_edits[project][user] += 1
+                        self.number_of_edits[project][row[0]] += 1
                         if row[1] not in self.edited_articles_list[project][row[0]]:
                             self.edited_articles_list[project][row[0]].append(row[1])
                     else:
