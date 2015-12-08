@@ -21,7 +21,7 @@ class GlobalMetrics:
         self.cohort = cohort
         self.projects = projects
         self.starttime = starttime
-        self.endtime = endttime
+        self.endtime = endtime
 
         self.sql = tool_labs_utils.WMFReplica()  # usage: GlobalMetrics.sql.query(db, sqlquery, values)
         
