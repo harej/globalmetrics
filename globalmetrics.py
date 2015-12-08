@@ -25,12 +25,12 @@ class GlobalMetrics:
 
         self.sql = tool_labs_utils.WMFReplica()  # usage: GlobalMetrics.sql.query(db, sqlquery, values)
         
-        self.active_editors = {}
-        self.newly_registered = {}
+        self.active_editors = {proj: {} for proj in projects}
+        self.newly_registered = {proj: {} for proj in projects}
         self.uploaded_media = {'commonswiki': {}}
-        self.absolute_bytes = {}
-        self.edited_articles_list = {}
-        self.number_of_edits = {}
+        self.absolute_bytes = {proj: {} for proj in projects}
+        self.edited_articles_list = {proj: {} for proj in projects}
+        self.number_of_edits = {proj: {} for proj in projects}
 
         start_minus_30_days = self.starttime.replace(days=-30)
         start_minus_30_days = start_minus_30_days.format('YYYYMMDDHHmmss')
@@ -45,7 +45,6 @@ class GlobalMetrics:
                  "where rev_timestamp >= {0} and rev_user_text in {1} "
                  "group by rev_user_text;").format(start_minus_30_days, tuple(self.cohort))
             q = self.sql.query(project, q, None)
-            self.active_editors[project] = {}
 
             for row in q:
                 user = row[0].decode('utf-8')
@@ -55,8 +54,6 @@ class GlobalMetrics:
                     self.active_editors[project][user] = False
 
             # Newly registered users
-            
-            self.newly_registered[project] = {}
 
             q = self.sql.query(project, "select user_name, user_registration from user where user_name in {0};".format(tuple(self.cohort)), None)
 
@@ -69,9 +66,6 @@ class GlobalMetrics:
                     self.newly_registered[project][user] = False
 
             # Several edit-related metrics
-            
-            self.absolute_bytes[project] = {}
-            self.edited_articles_list[project] = {}
 
             q1 = ("select rev_user_text, page_title, rev_len, rev_parent_id, "
                   "rev_id, page_namespace from revision_userindex "
