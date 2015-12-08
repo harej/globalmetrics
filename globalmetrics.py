@@ -30,6 +30,7 @@ class GlobalMetrics:
         self.uploaded_media = {'commonswiki': {}}
         self.absolute_bytes = {}
         self.edited_articles_list = {}
+        self.number_of_edits = {}
 
         start_minus_30_days = self.starttime.replace(days=-30)
         start_minus_30_days = start_minus_30_days.format('YYYYMMDDHHmmss')
@@ -67,7 +68,7 @@ class GlobalMetrics:
                 else:
                     self.newly_registered[project][user] = False
 
-            # Absolute bytes
+            # Several edit-related metrics
             
             self.absolute_bytes[project] = {}
             self.edited_articles_list[project] = {}
@@ -79,6 +80,18 @@ class GlobalMetrics:
                   "and rev_timestamp <= {1} "
                   "and rev_user_text in {2};").format(start, end, tuple(self.cohort))
             q1 = self.sql.query(project, q1, None)
+            
+            # Number of edits
+            
+            self.number_of_edits[project] = {}
+            for row in q1:
+                user = row[0].decode('utf-8')
+                if user in self.number_of_edits[project]:
+                    self.number_of_edits[project][user] += 1
+                else:
+                    self.number_of_edits[project][user] = 1
+            
+            # Absolute bytes
             
             prev_lengths = {}
             if len(q1) > 0:
