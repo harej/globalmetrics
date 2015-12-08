@@ -41,8 +41,7 @@ class GlobalMetrics:
             # Active editors
 
             q = ("select rev_user_text, count(*) from revision_userindex "
-                 "where rev_timestamp >= {0} and rev_user in ( "
-                 "select user_id from user where user_name in {1}) "
+                 "where rev_timestamp >= {0} and rev_user_text in {1} "
                  "group by rev_user_text;")
             q = self.sql.query(project, \
                                q.format(start_minus_30_days, tuple(self.cohort)), \
@@ -74,7 +73,7 @@ class GlobalMetrics:
             self.absolute_bytes[project] = {}
             self.edited_articles_list[project] = {}
 
-            q1 = self.sql.query(project, "select rev_user_text, page_title, rev_len, rev_parent_id from revision_userindex join page on rev_page = page_id where rev_timestamp >= {0} and rev_timestamp <= {1} and rev_user in ( select user_id from user where user_name in {2});".format(start, end, tuple(self.cohort)), None)
+            q1 = self.sql.query(project, "select rev_user_text, page_title, rev_len, rev_parent_id from revision_userindex join page on rev_page = page_id where rev_timestamp >= {0} and rev_timestamp <= {1} and rev_user_text in {2};".format(start, end, tuple(self.cohort)), None)
             
             parents = tuple([x[3] for x in q1])
             
