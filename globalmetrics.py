@@ -82,14 +82,16 @@ class GlobalMetrics:
             print(q1)
             q1 = self.sql.query(project, q1, None)
             
-            parents = {x[4]: x[3] for x in q1}
+            prev_lengths = {}
+            if len(q1) > 0:
+                parents = {x[4]: x[3] for x in q1}
             
-            q2 = ("select rev_id, rev_len from revision_userindex "
-                  "where rev_id in {0}").format(tuple(parents.values()))
-            print(q2)
-            q2 = self.sql.query(project, q2, None)
+                q2 = ("select rev_id, rev_len from revision_userindex "
+                      "where rev_id in {0}").format(tuple(parents.values()))
+                print(q2)
+                q2 = self.sql.query(project, q2, None)
             
-            prev_lengths = {x[0]: x[1] for x in q2}
+                prev_lengths = {x[0]: x[1] for x in q2}
             
             for revision, parent in parents.items():
                 if parent == 0:
@@ -116,6 +118,13 @@ class GlobalMetrics:
                 else:
                     self.edited_articles_list[project][row[0]] = [row[1]]
 
+            # For users not making any edits in the time period
+            for user in self.cohort:
+                if user not in self.absolute_bytes[project]:
+                    self.absolute_bytes[project][user] = 0
+                if user not in self.edited_articles_list[project]:
+                    self.edited_articles_list[project][user] = []
+
         # Media uploaded to Commons
         
         q = self.sql.query("commonswiki", "select rev_user_text, page_title from revision_userindex join page on rev_page = page_id where page_namespace = 6 and rev_parent_id = 0 and rev_timestamp >= {0} and rev_timestamp <= {1} and rev_user_text in {2};".format(start, end, tuple(self.cohort)), None)
@@ -127,3 +136,8 @@ class GlobalMetrics:
                 self.uploaded_media['commonswiki'][user].append(file)
             else:
                 self.uploaded_media['commonswiki'][user] = [file]
+        
+        # For users not making any uploads in the time period
+        for user in self.cohort:
+            if user not in self.uploaded_media['commonswiki']:
+                self.uploaded_media['commonswiki'] = []
