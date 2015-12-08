@@ -140,4 +140,4 @@ class GlobalMetrics:
         # For users not making any uploads in the time period
         for user in self.cohort:
             if user not in self.uploaded_media['commonswiki']:
-                self.uploaded_media['commonswiki'] = []
+                self.uploaded_media['commonswiki'][user] = []
