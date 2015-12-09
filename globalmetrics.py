@@ -59,6 +59,7 @@ class GlobalMetrics:
 
             for row in q:
                 user = row[0].decode('utf-8')
+                print(user)
                 reg = row[1].decode('utf-8')
                 if reg >= start_minus_30_days:
                     self.newly_registered[project][user] = True
