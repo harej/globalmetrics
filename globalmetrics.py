@@ -56,11 +56,21 @@ class GlobalMetrics:
             # Newly registered users
 
             q = self.sql.query(project, "select user_name, user_registration from user where user_name in {0};".format(tuple(self.cohort)), None)
+            
+            # Taking advantage of the one user table query to validate usernames
+            q_usernames = [x[0].decode('utf-8') for x in q]
+            for user in cohort:
+                if user not in q_usernames:
+                    raise ValueError("Invalid username: " + user)
 
             for row in q:
                 user = row[0].decode('utf-8')
                 print(user)
-                reg = row[1].decode('utf-8')
+                try:
+                    reg = row[1].decode('utf-8')
+                except AttributeError:
+                    self.newly_registered[project][user] = False  # yo account so old it lacks a registration date
+                    continue
                 if reg >= start_minus_30_days:
                     self.newly_registered[project][user] = True
                 else:
