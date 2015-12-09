@@ -32,7 +32,7 @@ class GlobalMetrics:
         self.edited_articles_list = {proj: {user: [] for user in cohort} for proj in projects}
         self.number_of_edits = {proj: {user: 0 for user in cohort} for proj in projects}
 
-        start_minus_30_days = self.starttime.replace(days=-30)
+        start_minus_30_days = self.starttime.replace(days=-7)
         start_minus_30_days = start_minus_30_days.format('YYYYMMDDHHmmss')
         start = self.starttime.format('YYYYMMDDHHmmss')
         end = self.endtime.format('YYYYMMDDHHmmss')
