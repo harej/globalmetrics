@@ -108,7 +108,7 @@ class GlobalMetrics:
                   x[1].decode("utf-8"), \
                   abs(x[2] - prev_lengths[x[3]]), \
                   x[5]] \
-                  for x in q1]
+                  for x in q1 if x[2] != None]
             
             for row in q:
                 self.absolute_bytes[project][row[0]] += row[2]
