@@ -85,7 +85,7 @@ class GlobalMetrics:
                   "and rev_timestamp <= {1} "
                   "and rev_user_text in {2};").format(start, end, tuple(self.cohort))
             q1 = self.sql.query(project, q1, None)
-                        
+
             # Absolute bytes
             
             prev_lengths = {}
@@ -104,11 +104,23 @@ class GlobalMetrics:
 
             # Combining the two queries above to calculate revision sizes
             # 0 = user; 1 = pagename; 2 = absolute value bytes contributed, 3 = namespace
-            q = [[x[0].decode("utf-8"), \
-                  x[1].decode("utf-8"), \
-                  abs(x[2] - prev_lengths[x[3]]), \
-                  x[5]] \
-                  for x in q1 if x[2] != None and x[3] in prev_lengths]
+
+            q = []
+            for x in q1:
+                if x[2] == None:
+                    new_bytes = 0
+                else:
+                    new_bytes = new_bytes = x[2]
+                if prev_lengths[x[3]] == None:
+                    old_bytes = 0
+                else:
+                    old_bytes = prev_lengths[x[3]]
+
+                user = x[0].decode("utf-8")
+                pagename = x[1].decode("utf-8")
+                bytes_contributed = abs(new_bytes - old_bytes)
+                namespace = x[5]
+                q.append([user, pagename, bytes_contributed, namespace])
             
             for row in q:
                 self.absolute_bytes[project][row[0]] += row[2]
