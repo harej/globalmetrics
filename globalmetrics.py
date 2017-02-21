@@ -93,8 +93,12 @@ class GlobalMetrics:
             if len(q1) > 0:
                 parents = {x[4]: x[3] for x in q1}
             
-                q2 = ("select rev_id, rev_len from revision_userindex "
-                      "where rev_id in {0}").format(tuple(parents.values()))
+                if len(parents) > 1:
+                    q2 = ("select rev_id, rev_len from revision_userindex "
+                          "where rev_id in {0}").format(tuple(parents.values()))
+                else:
+                    q2 = ("select rev_id, rev_len from revision_userindex "
+                          "where rev_id = {0}").format(parents.values()[0])
                 q2 = self.sql.query(project, q2, None)
             
                 prev_lengths = {x[0]: x[1] for x in q2}
