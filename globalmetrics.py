@@ -61,7 +61,8 @@ class GlobalMetrics:
             q_usernames = [x[0].decode('utf-8') for x in q]
             for user in cohort:
                 if user not in q_usernames:
-                    raise ValueError("Invalid username: " + user)
+                    #raise ValueError("Invalid username: " + user)
+                    self.newly_registered[project][user] = True  # Assumed newcomer
 
             for row in q:
                 user = row[0].decode('utf-8')
