@@ -111,7 +111,7 @@ class GlobalMetrics:
                     new_bytes = 0
                 else:
                     new_bytes = new_bytes = x[2]
-                if prev_lengths[x[3]] == None:
+                if prev_lengths[x[3]] == None or x[3] not in prev_lengths:
                     old_bytes = 0
                 else:
                     old_bytes = prev_lengths[x[3]]
