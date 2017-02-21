@@ -99,7 +99,7 @@ class GlobalMetrics:
                 prev_lengths = {x[0]: x[1] for x in q2}
             
                 for revision, parent in parents.items():
-                    if parent == 0:
+                    if parent in [0, None]:
                         prev_lengths[parent] = 0
 
             # Combining the two queries above to calculate revision sizes
